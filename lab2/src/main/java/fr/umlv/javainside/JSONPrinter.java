@@ -30,7 +30,13 @@ public class JSONPrinter {
 
         return Arrays.stream(tab)
                 .map(recordComponent -> {
-                    var recordName = (recordComponent.isAnnotationPresent(JSONProperty.class)) ? recordComponent.getAnnotation(JSONProperty.class).value() : recordComponent.getName();
+                    var recordName = (recordComponent.isAnnotationPresent(JSONProperty.class))
+                            ? recordComponent.getAnnotation(JSONProperty.class).value()
+                            : recordComponent.getName();
+
+                    if (recordName.isEmpty())
+                        recordName = recordComponent.getName().replace('_', '-');
+
                     var recordVal = invokeAccessor(recordComponent.getAccessor(), record);
                     var mark = (recordVal instanceof String) ? "\"" : "";
 
