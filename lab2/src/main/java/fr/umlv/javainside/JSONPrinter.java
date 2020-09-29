@@ -8,25 +8,6 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public class JSONPrinter {
-    /*
-    public static String toJSON(Person person) {
-        return """
-      {
-        "firstName": "%s",
-        "lastName": "%s"
-      }
-      """.formatted(person.firstName(), person.lastName());
-    }
-
-    public static String toJSON(Alien alien) {
-        return """
-      {
-        "age": %s,
-        "planet": "%s"
-      }
-      """.formatted(alien.age(), alien.planet());
-    }
-    */
 
     private static Object invokeAccessor(Method accessor, Record record) {
         try {
@@ -49,14 +30,13 @@ public class JSONPrinter {
         var tab = t.getRecordComponents();
 
         return Arrays.stream(tab)
-                .map(recordComponent -> invokeAccessor(recordComponent.getAccessor(), record))
-                .map(Object::toString).collect(Collectors.joining(","));
-    }
+                .map(recordComponent -> {
+                    var val = invokeAccessor(recordComponent.getAccessor(), record);
+                    var mark = (val instanceof String) ? "\"" : "";
 
-    public static void main(String[] args) {
-        var person = new Person("John", "Doe");
-        System.out.println(toJSON(person));
-        var alien = new Alien(100, "Saturn");
-        System.out.println(toJSON(alien));
+                    return "\""+recordComponent.getName()+"\""+":"
+                            +mark+invokeAccessor(recordComponent.getAccessor(), record).toString()+mark;
+                })
+                .collect(Collectors.joining(",", "{", "}"));
     }
 }
