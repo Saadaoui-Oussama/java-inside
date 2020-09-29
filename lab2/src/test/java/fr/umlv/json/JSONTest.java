@@ -1,15 +1,34 @@
 package fr.umlv.json;
 
-import fr.umlv.javainside.Alien;
-import fr.umlv.javainside.IncompleteJSONParser;
-import fr.umlv.javainside.JSONPrinter;
-import fr.umlv.javainside.Person;
-import fr.umlv.javainside.Book;
+import fr.umlv.javainside.*;
 import org.junit.jupiter.api.Test;
 
+import static java.util.Objects.requireNonNull;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class JSONTest {
+
+    public record Person(String firstName, String lastName) {
+        public Person {
+            requireNonNull(firstName);
+            requireNonNull(lastName);
+        }
+    }
+
+    public record Alien(int age, String planet) {
+        public Alien {
+            if (age < 0) {
+                throw new IllegalArgumentException("Negative age");
+            }
+            requireNonNull(planet);
+        }
+    }
+
+    public record Book(@JSONProperty String book_title, int year) {
+        public Book {
+            requireNonNull(book_title);
+        }
+    }
 
     @Test
     public void testPerson() {
