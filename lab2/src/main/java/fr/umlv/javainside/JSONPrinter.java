@@ -2,7 +2,6 @@ package fr.umlv.javainside;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.RecordComponent;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -31,10 +30,11 @@ public class JSONPrinter {
 
         return Arrays.stream(tab)
                 .map(recordComponent -> {
-                    var val = invokeAccessor(recordComponent.getAccessor(), record);
-                    var mark = (val instanceof String) ? "\"" : "";
+                    var recordName = (recordComponent.isAnnotationPresent(JSONProperty.class)) ? recordComponent.getAnnotation(JSONProperty.class).value() : recordComponent.getName();
+                    var recordVal = invokeAccessor(recordComponent.getAccessor(), record);
+                    var mark = (recordVal instanceof String) ? "\"" : "";
 
-                    return "\""+recordComponent.getName()+"\""+":"
+                    return "\""+recordName+"\""+":"
                             +mark+invokeAccessor(recordComponent.getAccessor(), record).toString()+mark;
                 })
                 .collect(Collectors.joining(",", "{", "}"));
